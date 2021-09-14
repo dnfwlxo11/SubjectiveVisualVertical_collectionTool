@@ -15,10 +15,8 @@
                     </div>
                     <div class="modal-body">
                         <div class="text-center pb-3">
-                            <apexchart type="scatter" height="350" :options="chartOptions" :series="chart.ac.series">
-                            </apexchart>
-                            <apexchart type="scatter" height="350" :options="chartOptions" :series="chart.bc.series">
-                            </apexchart>
+                            <apexchart type="line" height="350" :options="chartOptions" :series="chart.ac.series" />
+                            <apexchart type="line" height="350" :options="chartOptions" :series="chart.bc.series" />
                         </div>
                     </div>
                     <div class="modal-footer d-block">
@@ -44,7 +42,7 @@
         name: 'ptaModal',
         props: ['data'],
         components: {
-            apexchart: VueApexCharts,
+            apexchart: VueApexCharts
         },
         data() {
             return {
