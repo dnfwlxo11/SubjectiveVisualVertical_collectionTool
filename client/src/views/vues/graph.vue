@@ -1,6 +1,6 @@
 <template>
     <div class="graph">
-        <apexchart type="line" height="350" :options="chartOptions" :series="[1,2,3]" />
+        <apexchart type="line" height="350" :options="chartOptions" :series="series" />
     </div>
 </template>
 
@@ -9,11 +9,24 @@ import VueApexCharts from 'vue-apexcharts'
 
 export default {
     name: 'graph',
+    props: {
+        data: {
+            type: Object,
+            default: {}
+        }
+    },
     components: {
         apexchart: VueApexCharts
     },
     data() {
         return {
+            dataNodes: null,
+            series: [
+                {
+                    name: 'graph',
+                    data: [1,2,3,4,5,6,7,8,9]
+                }
+            ],
             chartOptions: {
                 chart: {
                     height: 350,
@@ -60,6 +73,15 @@ export default {
                 }
             }
         }
+    },
+    methods: {
+        getData() {
+            this.data
+        }
+    },
+    mounted() {
+        console.log(this.data.data)
+        // this.getData()
     }
 }
 </script>
