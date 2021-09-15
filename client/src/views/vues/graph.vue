@@ -1,6 +1,11 @@
 <template>
-    <div class="graph">
-        <apexchart type="line" height="350" :options="chartOptions" :series="series" />
+    <div class="graph mb-5" style="border: 1px solid">
+        <apexchart ref="chart" type="line" height="350" :options="chartOptions" :series="series" />
+        <div class="row">
+            <div class="col text-left ml-5"><strong>Right</strong></div>
+            <div class="col"><strong>Tilt Angle</strong></div>
+            <div class="col text-right mr-4"><strong>Left</strong></div>
+        </div>
     </div>
 </template>
 
@@ -10,9 +15,11 @@ import VueApexCharts from 'vue-apexcharts'
 export default {
     name: 'graph',
     props: {
-        data: {
-            type: Object,
-            default: {}
+        chartData: {
+            type: Array,
+            default() {
+                return []
+            }
         }
     },
     components: {
@@ -23,8 +30,8 @@ export default {
             dataNodes: null,
             series: [
                 {
-                    name: 'graph',
-                    data: [1,2,3,4,5,6,7,8,9]
+                    name: 'value',
+                    data: []
                 }
             ],
             chartOptions: {
@@ -39,7 +46,7 @@ export default {
                     enabled: true,
                 },
                 title: {
-                    text: 'Pta 그래프',
+                    text: '주관적시수직 Subjective Visual Vertical',
                     align: 'left'
                 },
                 grid: {
@@ -54,18 +61,14 @@ export default {
                     borderType: 'solid'
                 },
                 xaxis: {
-                    categories: [0, 125, 250, 500, 1000, 1500, 2000, 4000, 6000, 8000, 12000],
-                    title: {
-                        text: 'Frequency in Hz'
-                    }
+                    categories: [-60, -45, -30, -15, 0, 15, 30, 45, 60]
                 },
                 yaxis: {
-                    reversed: true,
-                    tickAmount: 11,
-                    min: -10,
-                    max: 100,
+                    tickAmount: 8,
+                    min: -40,
+                    max: 40,
                     title: {
-                        text: 'Hearing level (dB)'
+                        text: 'SVV Angle Deviation'
                     },
                 },
                 crosshairs: {
@@ -75,13 +78,21 @@ export default {
         }
     },
     methods: {
-        getData() {
-            this.data
-        }
+        
+    },
+    created() {
+        
     },
     mounted() {
-        console.log(this.data.data)
-        // this.getData()
+        this.series[0].data = this.chartData
+    },
+    watch: {
+        chartData(val) {
+            console.log(val)
+            this.$refs.chart.updateSeries([{
+                data: val
+            }])
+        }
     }
 }
 </script>

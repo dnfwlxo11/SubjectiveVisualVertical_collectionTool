@@ -1,6 +1,9 @@
 <template>
   <div class="home">
     <div class="container">
+      <div class="mb-5">
+        <button class="btn btn-primary mr-3">전체 데이터 추출</button>
+      </div>
       <ul class="list-group" v-for="(item, idx) of originData" :key="idx">
         <li class="list-group-item mb-3" @click="getPtaImg(idx);openModal=!openModal">
           <strong>Data. {{item.pid}}</strong>&nbsp;(uid: {{item.uid}})

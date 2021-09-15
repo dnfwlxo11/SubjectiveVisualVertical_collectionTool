@@ -1,38 +1,45 @@
 <template>
   <div class="about">
-    <div class="pl-5 pr-5">
-      <!-- <div ref="info">
-        <div class="row">
-          <div class="col">
-            <label for="formGroupExampleInput">의사</label>
-          </div>
-          <div class="col">
-            <label for="formGroupExampleInput2">이름</label>
-          </div>
-          <div class="col">
-            <label for="formGroupExampleInput2">나이</label>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col form-group">
-            <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Example input placeholder">
-          </div>
-          <div class="col form-group">
-            <input type="text" class="form-control" id="formGroupExampleInput2" placeholder="Another input placeholder">
-          </div>
-          <div class="col form-group">
-            <input type="text" class="form-control" id="formGroupExampleInput2" placeholder="Another input placeholder">
-          </div>
-        </div>
-      </div> -->
+    <div class="container">
       <div class="mb-5">
-        <button class="btn btn-primary mr-3" @click="getData">데이터 저장</button>
-        <button class="btn btn-danger" @click="getData">데이터 초기화</button>
+        <button class="btn btn-primary mr-3">데이터 저장</button>
+        <button class="btn btn-secondary mr-3" @click="exportToPDF">PDF로 추출</button>
+        <button class="btn btn-danger">데이터 초기화</button>
       </div>
-      <div class="row">
-        <div class="col" v-for="(value, key) in data" :key="key">
-          <h2 class="text-left"><strong>{{key}}</strong></h2>
-          <table class="table srt-wrs-table table-bordered">
+      <div ref="exportPage">
+        <div class="mb-3">
+          <table class="table table-bordered">
+            <tbody>
+              <tr>
+                <td v-for="(value, key) in drInfo" :key="key">
+                  <div class="row">
+                    <div class="col-2 my-auto">{{key}}</div><div class="col-10"><input type="text" class="form-control text-center no-border" v-model="drInfo[key]"></div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="mb-5">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th v-for="(value, key) in privInfo" :key="key">
+                  {{key}}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td v-for="(value, key) in privInfo" :key="key">
+                  <input type="text" class="form-control text-center no-border" v-model="privInfo[key]">
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <table class="table table-bordered">
             <thead>
               <tr>
                 <th class="align-middle" v-for="(item, idx) of tableHead" :key="idx">
@@ -40,109 +47,169 @@
                 </th>
               </tr>
             </thead>
-            <tbody v-for="(rowVal, rowKey) in data[key]" :key="rowKey">
-              <tr>
-                <td class="align-middle" style="white-space: nowrap;">{{rowKey}}도</td>
-                <td class="align-middle" v-for="(inputVal, inputKey) in data[key][rowKey]" :key="inputKey">
-                  <input type="text" class="form-control text-center no-border" v-model="data[key][rowKey][inputKey]">
+            <tbody v-for="(value, key) in originData" :key="key">
+              <h4 v-if="!key.includes('Horizontal')" class="text-left p-1 pl-3 my-auto">{{key}}</h4>
+              <tr v-for="(rowVal, rowKey) in originData[key]" :key="rowKey">
+                <td v-if="!key.includes('Horizontal')" class="align-middle" style="white-space: nowrap;">
+                  <span>
+                    Tilt {{rowKey}}° (-{{rowKey}})
+                  </span>
+                  <span>
+                    Tilt {{rowKey}}° ({{rowKey}})
+                  </span>
                 </td>
-                <td><input type="text" class="form-control text-center no-border" v-model="chartData[key][rowKey]" readonly></td>
+                <td v-else class="align-middle" style="white-space: nowrap;">{{rowKey}}</td>
+                <td class="align-middle" v-for="(inputVal, inputKey) in originData[key][rowKey]" :key="inputKey">
+                  <input type="text" class="form-control text-center no-border"
+                    v-model="originData[key][rowKey][inputKey]">
+                </td>
+                <td><input type="text" class="form-control text-center no-border" v-model="chartData[key][rowKey]"
+                    readonly></td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
-      <graph :data="{}" />
+      <graph :chart-data="recievData" />
     </div>
   </div>
 </template>
 
 <script>
-import graph from './vues/graph.vue'
+  import graph from './vues/graph.vue'
+  import html2pdf from 'html2pdf.js'
 
-export default {
-  name: 'about',
-  components: {
-    graph
-  },
-  data() {
-    return {
-      tableHead: ['', '30Hz', '45Hz', '60Hz', '평균'],
-      data: {
-        'left': {
-          '15': {
-            '30Hz': 0,
-            '45Hz': 0,
-            '60Hz': 0
-          },
-          '30': {
-            '30Hz': 0,
-            '45Hz': 0,
-            '60Hz': 0
-          },
-          '45': {
-            '30Hz': 0,
-            '45Hz': 0,
-            '60Hz': 0
-          }
-        },
-        'right': {
-          '15': {
-            '30Hz': 0,
-            '45Hz': 0,
-            '60Hz': 0
-          },
-          '30': {
-            '30Hz': 0,
-            '45Hz': 0,
-            '60Hz': 0
-          },
-          '45': {
-            '30Hz': 0,
-            '45Hz': 0,
-            '60Hz': 0
-          }
-        }
-      },
-      chartData: {
-        'left': {
-          '15': 0,
-          '30': 0,
-          '45': 0
-        },
-        'right': {
-          '15': 0,
-          '30': 0,
-          '45': 0
-        }
-      }
-    }
-  },
-  methods: {
-    getData() {
-      console.log(JSON.stringify(this.data))
+  export default {
+    name: 'about',
+    components: {
+      graph
     },
-    getAver(direction, degree) {
-      let summ = Object.values(this.data[direction][degree]).reduce((a, b) => parseInt(a) + parseInt(b), 0)
-      this.chartData[direction][degree] = parseFloat((summ / 3 || 0).toFixed(2))
-    }
-  },
-  mounted() {
-  },
-  computed: {
-
-  },
-  watch: {
-    data: {
-      deep: true,
-      handler(val) {
-        Object.keys(val).forEach(direction => {
-          Object.keys(val[direction]).forEach(degree => {
-            this.getAver(direction, degree)
-          })
+    data() {
+      return {
+        drInfo: {
+          'Date': '',
+          'Doctor': '',
+          'Tester': ''
+        },
+        privInfo: {
+          'ID': '',
+          'Name': '',
+          'Age': '',
+          'Sex': ''
+        },
+        tableHead: ['', 'Test 1', 'Test 2', 'Test 3', '평균'],
+        originData: {
+          'Horizontal': {
+            'Horizontal': {
+              'Test 1': 0,
+              'Test 2': 0,
+              'Test 3': 0
+            }
+          },
+          'Right': {
+            '15': {
+              'Test 1': 0,
+              'Test 2': 0,
+              'Test 3': 0
+            },
+            '30': {
+              'Test 1': 0,
+              'Test 2': 0,
+              'Test 3': 0
+            },
+            '45': {
+              'Test 1': 0,
+              'Test 2': 0,
+              'Test 3': 0
+            }
+          },
+          'Left': {
+            '15': {
+              'Test 1': 0,
+              'Test 2': 0,
+              'Test 3': 0
+            },
+            '30': {
+              'Test 1': 0,
+              'Test 2': 0,
+              'Test 3': 0
+            },
+            '45': {
+              'Test 1': 0,
+              'Test 2': 0,
+              'Test 3': 0
+            },
+          }
+        },
+        chartData: {
+          'Horizontal': {
+            'Horizontal': 0
+          },
+          'Right': {
+            '15': 0,
+            '30': 0,
+            '45': 0
+          },
+          'Left': {
+            '15': 0,
+            '30': 0,
+            '45': 0
+          }
+        },
+        recievData: [null, 0, 0, 0, 0, 0, 0, 0, null]
+      }
+    },
+    methods: {
+      setData() {
+        return [].concat([null], Object.values(this.chartData['Right']), Object.values(this.chartData['Horizontal']),
+          Object.values(this.chartData['Left']), [null])
+      },
+      getAver(direction, degree) {
+        let summ = Object.values(this.originData[direction][degree]).reduce((a, b) => parseInt(a) + parseInt(b), 0)
+        this.chartData[direction][degree] = parseFloat((summ / 3 || 0).toFixed(2))
+      },
+      exportToPDF() {
+        html2pdf(this.$refs.exportPage, {
+          margin: 0,
+          filename: 'document.pdf',
+          image: {
+            type: "jpg",
+            quality: 0.95
+          },
+          html2canvas: {
+            scrollY: 0,
+            scale: 1,
+            dpi: 300,
+            letterRendering: true,
+            ignoreElements: function (element) {
+              if (element.id == "pdf-button-area") {
+                return true;
+              }
+            }
+          },
+          jsPDF: {
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4',
+            compressPDF: true
+          }
         })
+      },
+    },
+    mounted() {},
+    watch: {
+      originData: {
+        deep: true,
+        handler(val) {
+          Object.keys(val).forEach(direction => {
+            Object.keys(val[direction]).forEach(degree => {
+              this.getAver(direction, degree)
+            })
+          })
+
+          this.recievData = this.setData()
+        }
       }
     }
   }
-}
 </script>
