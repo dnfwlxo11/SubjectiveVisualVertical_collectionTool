@@ -234,6 +234,7 @@
     },
     mounted() {
       this.graphWidth = this.$refs.exportPage.clientWidth
+      console.log(this.graphWidth, this.$refs.exportPage.clientWidth)
     },
     watch: {
       originData: {

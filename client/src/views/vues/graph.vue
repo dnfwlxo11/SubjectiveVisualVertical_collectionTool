@@ -1,6 +1,6 @@
 <template>
-    <div class="graph mb-5" style="border: 1px solid">
-        <apexchart ref="chart" type="line" height="350" :options="chartOptions" :series="series" />
+    <div class="graph mb-5" style="border: 1px solid;">
+        <apexchart ref="graph" height="100%" type="line" :options="chartOptions" :series="series" />
         <div class="row">
             <div class="col text-left ml-5"><strong>Right</strong></div>
             <div class="col"><strong>Tilt Angle</strong></div>
@@ -11,6 +11,7 @@
 
 <script>
 import VueApexCharts from 'vue-apexcharts'
+import html2canvas from 'html2canvas'
 
 export default {
     name: 'graph',
@@ -20,6 +21,10 @@ export default {
             default() {
                 return []
             }
+        },
+        clientWidth: {
+            type: Number,
+            default: 0
         }
     },
     components: {
@@ -36,7 +41,6 @@ export default {
             ],
             chartOptions: {
                 chart: {
-                    height: 350,
                     type: 'line',
                     zoom: {
                         enabled: false
@@ -74,22 +78,33 @@ export default {
                 crosshairs: {
                     show: true
                 }
-            }
+            },
+            grapSvgURI: null
         }
     },
     methods: {
-        
+        getSvgURI() {
+            return this.graphSvgURI
+        }
     },
     created() {
         
     },
     mounted() {
         this.series[0].data = this.chartData
+
+        // console.log(this.$refs.graph)
+        this.graphSvgURI = this.$refs.graph.chart.paper().svg()
+        // console.log(this.graphSvgURI)
+        // this.$refs.graph.chart.dataURI()
+        
+        // .then((uri)=>{
+        //     this.grapImgURI = uri
+        // })
     },
     watch: {
         chartData(val) {
-            console.log(val)
-            this.$refs.chart.updateSeries([{
+            this.$refs.graph.updateSeries([{
                 data: val
             }])
         }
