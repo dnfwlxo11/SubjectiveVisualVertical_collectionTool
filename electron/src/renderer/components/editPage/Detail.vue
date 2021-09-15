@@ -2,6 +2,7 @@
   <div class="about">
     <div class="container">
       <div class="mb-5">
+        <button @click="$router.push('/main')">뒤로가기</button>
         <button class="btn btn-primary mr-3" @click="saveData">데이터 저장</button>
         <button class="btn btn-secondary mr-3" @click="exportToPDF">PDF로 추출</button>
         <button class="btn btn-danger">데이터 초기화</button>
@@ -94,9 +95,9 @@
     data() {
       return {
         drInfo: {
-          'Date': '',
-          'Doctor': '',
-          'Tester': ''
+          'Date': this.$route.query.date,
+          'Doctor': this.$route.query.doctor,
+          'Tester': this.$route.query.tester
         },
         privInfo: {
           'ID': '',
@@ -233,6 +234,7 @@
       },
     },
     mounted() {
+      console.log(this.$route)
       this.graphWidth = this.$refs.exportPage.clientWidth
       console.log(this.graphWidth, this.$refs.exportPage.clientWidth)
     },

@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import Home from '@/components/mainPage/Home.vue'
 
 Vue.use(Router)
 
@@ -20,9 +21,9 @@ export default new Router({
       component: require('@/components/editPage/Detail').default
     },
     {
-      path: '/home',
-      name: 'home',
-      component: require('@/components/mainPage/Home').default
+      path: '/main',
+      name: 'main',
+      component: Home
     }
   ]
 })

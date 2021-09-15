@@ -2,7 +2,7 @@
   <div class="home">
     <div class="container">
       <div class="mb-5">
-        <button @click="$router.push('/')">뒤로가기</button>
+        <button @click="$router.push('/')">메인페이지</button>
         <button class="btn btn-primary mr-3">전체 데이터 추출</button>
         <button class="btn btn-warning mr-3" @click="openModal=true">데이터 등록</button>
       </div>
@@ -11,7 +11,7 @@
           <strong>Data. {{item.pid}}</strong>&nbsp;(uid: {{item.uid}})
         </li>
       </ul>
-      <add-modal v-if="openModal" @on-close="openModal=false" @on-complete="(response)=>{openModal=false;$router.push({path: '/detail', query: {date: '20210101', id: '1234'}})}"/>
+      <add-modal v-if="openModal" @on-close="openModal=false" @on-complete="(response)=>{openModal=false;$router.push({path: '/detail', query: {date: response.date, doctor: response.doctor, tester: response.tester}})}"/>
       <!-- <pta-modal v-if="openModal" :data="currData" @on-close="openModal=false" @on-confirm="openModal=false" /> -->
     </div>
   </div>
@@ -23,7 +23,7 @@ import addModal from './vues/addModal.vue'
 import axios from 'axios'
 
 export default {
-  name: 'Home',
+  name: 'main',
   components: {
     addModal
   },

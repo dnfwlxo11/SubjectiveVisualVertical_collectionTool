@@ -1,6 +1,5 @@
 <template>
     <div class="graph mb-5" style="border: 1px solid;">
-        <button @click="$router.push('/')">뒤로가기</button>
         <apexchart ref="graph" height="100%" type="line" :options="chartOptions" :series="series" />
         <div class="row">
             <div class="col text-left ml-5"><strong>Right</strong></div>
