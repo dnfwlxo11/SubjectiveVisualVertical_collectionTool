@@ -20,7 +20,7 @@ module.exports = {
           "icon": "public/ic_app.png",
           "target": [ // 빌드 옵션 : 32bit, 64bit 지원을 위해 추가합니다.
             {
-              "target": "nsis",
+              "target": "portable",
               "arch": [
                 "x64",
                 "ia32"

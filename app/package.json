@@ -1,5 +1,5 @@
 {
-  "name": "client",
+  "name": "labeling",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -22,7 +22,8 @@
     "nedb-promises": "^5.0.0",
     "vue": "^2.6.11",
     "vue-apexcharts": "^1.6.2",
-    "vue-router": "^3.2.0"
+    "vue-router": "^3.2.0",
+    "xlsx": "^0.17.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

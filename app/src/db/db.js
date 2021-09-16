@@ -9,8 +9,6 @@ const datastore = Datastore.create({
     filename: dbPath
 })
 
-datastore.load()
-
 // const datastore = Datastore.create('../data.db')
 
 async function findPageData(pageSize, pageNum, sort) {

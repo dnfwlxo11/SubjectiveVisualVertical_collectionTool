@@ -3,9 +3,8 @@
     <div class="container">
       <div class="mb-5">
         <button class="btn btn-primary mr-3" @click="saveData">그래프 저장</button>
-        <button class="btn btn-secondary mr-3" @click="exportToPDF">PDF로 추출</button>
+        <!-- <button class="btn btn-secondary mr-3" @click="exportToPDF">PDF로 추출</button> -->
         <button class="btn btn-danger mr-3" @click="deleteOriginData">데이터 삭제</button>
-        <button class="btn btn-warning" @click="$router.go()">이어서 등록</button>
       </div>
       <div ref="exportPage">
         <div>

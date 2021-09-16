@@ -41,7 +41,9 @@
 
 <script>
 // @ is an alias to /src
+import XLSX from 'xlsx'
 import { findAllData, findPageData } from '../db/db'
+import { ipcRenderer } from 'electron'
 
 export default {
   name: 'Home',
@@ -50,7 +52,7 @@ export default {
       originData: null,
       currData: null,
       openModal: false,
-      dataCnt: 6,
+      dataCnt: 0,
       pageSize: 5,
       pageNum: 0,
       sort: 1,
@@ -74,8 +76,17 @@ export default {
     async getCnt() {
       this.dataCnt = await findAllData()
     },
-    exportData() {
-      console.log(this.originData)
+    async exportData() {
+      const exportData = await findPageData(100000, this.pageNum, this.sort)
+
+      delete exportData['timestamp']
+      delete exportData['_id']
+
+      const wb = XLSX.utils.book_new()
+      const xlsx = XLSX.utils.json_to_sheet(exportData)
+      
+      XLSX.utils.book_append_sheet(wb, xlsx, 'sheet')
+      XLSX.writeFile(wb, 'export_data.xlsx')
     },
     async init() {
       await this.getCnt()
