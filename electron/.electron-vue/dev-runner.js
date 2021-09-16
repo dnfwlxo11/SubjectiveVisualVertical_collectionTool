@@ -12,9 +12,18 @@ const webpackHotMiddleware = require('webpack-hot-middleware')
 const mainConfig = require('./webpack.main.config')
 const rendererConfig = require('./webpack.renderer.config')
 
+const Datastore = require('nedb-promises')
+const { app } = require('electron')
+
 let electronProcess = null
 let manualRestart = false
 let hotMiddleware
+
+const dbFactory = (fileName) => Datastore.create({
+  fileName: `${process.env.NODE_ENV === 'development' ? app.getAppPath() : app.getAppPath()}/test.db`,
+  timestampData: true,
+  autoload: true
+})
 
 function logStats (proc, data) {
   let log = ''
