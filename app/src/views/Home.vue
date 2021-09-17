@@ -22,7 +22,7 @@
           </div>
         </div>
       </div>
-      <div style="min-height: 600px">
+      <div>
         <ul class="list-group" v-for="(item, idx) of originData" :key="idx">
           <li class="list-group-item mb-3" @click="$router.push({path: '/detail', query: {id: item._id}})">
             <div>검진일: {{item['Date']}}</div>
@@ -31,9 +31,8 @@
           </li>
         </ul>
       </div>
-      <div>
-        <button class="btn btn-secondary mr-3" @click="pageDown">이전</button>
-        <button class="btn btn-secondary mr-3" @click="pageUp">다음</button>
+      <div class="text-center justify-content-center">
+        <pagination v-if="dataCnt!=0" :totalPage="dataCnt" :currPage="pageNum" :pageSize="pageSize" v-model="pageNum" />
       </div>
     </div>
   </div>
@@ -42,34 +41,27 @@
 <script>
   // @ is an alias to /src
   import XLSX from 'xlsx'
+  import pagination from '@/components/pagination.vue'
   import { findAllData, findPageData } from '../db/db'
   import { remote } from 'electron'
 
   export default {
     name: 'Home',
+    components: {
+      pagination
+    },
     data() {
       return {
         originData: null,
         currData: null,
         openModal: false,
         dataCnt: 0,
-        pageSize: 5,
-        pageNum: 0,
+        pageSize: 3,
+        pageNum: 1,
         sort: 1,
       }
     },
     methods: {
-      pageUp() {
-        if (this.dataCnt / this.pageSize > (this.pageNum + 1))
-          this.pageNum += 1
-        this.loadData()
-      },
-      pageDown() {
-        if (this.pageNum) {
-          this.pageNum -= 1
-          this.loadData()
-        }
-      },
       async loadData() {
         this.originData = await findPageData(this.pageSize, this.pageNum, this.sort)
       },
@@ -123,6 +115,11 @@
     },
     mounted() {
       this.init()
+    },
+    watch: {
+      pageNum() {
+        this.loadData()
+      }
     }
   }
 </script>

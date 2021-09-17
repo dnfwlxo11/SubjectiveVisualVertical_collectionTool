@@ -9,12 +9,10 @@ const datastore = Datastore.create({
     filename: dbPath
 })
 
-// const datastore = Datastore.create('../data.db')
-
 async function findPageData(pageSize, pageNum, sort) {
     const res = await datastore.find({})
                                .limit(pageSize)
-                               .skip(pageSize*pageNum)
+                               .skip(pageSize*(pageNum-1))
                                .sort({timestamp: sort})
 
     return res
