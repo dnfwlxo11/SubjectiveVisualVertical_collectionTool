@@ -1,17 +1,16 @@
 <template>
-    <div class="graph mb-5" style="border: 1px solid;">
-        <apexchart ref="graph" height="100%" type="line" :options="chartOptions" :series="series" />
+    <div ref="parentWidth" class="graph mb-5" style="border: 1px solid;">
+        <apexchart ref="graph" type="line" :options="chartOptions" :series="series" />
         <div class="row">
             <div class="col text-left ml-5"><strong>Right</strong></div>
-            <div class="col"><strong>Tilt Angle</strong></div>
-            <div class="col text-right mr-4"><strong>Left</strong></div>
+            <div class="col text-center"><strong>Tilt Angle</strong></div>
+            <div class="col text-right mr-5"><strong>Left</strong></div>
         </div>
     </div>
 </template>
 
 <script>
 import VueApexCharts from 'vue-apexcharts'
-import html2canvas from 'html2canvas'
 
 export default {
     name: 'graph',
@@ -84,7 +83,7 @@ export default {
     },
     methods: {
         getSvgURI() {
-            return this.graphSvgURI
+            return this.$refs.graph.dataURI()
         }
     },
     created() {
@@ -92,15 +91,8 @@ export default {
     },
     mounted() {
         this.series[0].data = this.chartData
-
-        // console.log(this.$refs.graph)
-        this.graphSvgURI = this.$refs.graph.chart.paper().svg()
-        // console.log(this.graphSvgURI)
-        // this.$refs.graph.chart.dataURI()
-        
-        // .then((uri)=>{
-        //     this.grapImgURI = uri
-        // })
+    },
+    computed: {
     },
     watch: {
         chartData(val) {

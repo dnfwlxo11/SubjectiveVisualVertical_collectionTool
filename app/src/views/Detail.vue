@@ -1,82 +1,116 @@
 <template>
   <div class="about">
-    <div class="container">
+    <div class="container mb-3 mt-3">
       <div class="mb-5">
-        <button class="btn btn-primary mr-3" @click="saveData">그래프 저장</button>
-        <!-- <button class="btn btn-secondary mr-3" @click="exportToPDF">PDF로 추출</button> -->
-        <button class="btn btn-danger mr-3" @click="deleteOriginData">데이터 삭제</button>
+        <button class="btn btn-primary mr-3" @click="saveData();$toasted.success('저장 완료')">그래프 저장</button>
+        <button class="btn btn-secondary mr-3" @click="saveData();exportToPDF()">PDF로 추출</button>
+        <button class="btn btn-danger mr-3" @click="deleteOriginData;$toasted.error('삭제 완료')">데이터 삭제</button>
+        <button class="btn btn-secondary" @click="$router.push('/')">목록보기</button>
       </div>
-      <div ref="exportPage">
-        <div>
-          <div class="mb-3">
-            <table class="table table-bordered">
-              <tbody>
-                <tr>
-                  <td v-for="(value, key) in drInfo" :key="key">
-                    <div class="row">
-                      <div class="col-2 my-auto">{{key}}</div><div class="col-10"><input type="text" class="form-control text-center no-border" v-model="drInfo[key]"></div>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="mb-3">
-            <table class="table table-bordered">
-              <thead>
-                <tr>
-                  <th v-for="(value, key) in privInfo" :key="key">
-                    {{key}}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td v-for="(value, key) in privInfo" :key="key">
-                    <input type="text" class="form-control text-center no-border" v-model="privInfo[key]">
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div>
-            <table class="table table-bordered">
-              <thead>
-                <tr>
-                  <th class="align-middle" v-for="(item, idx) of tableHead" :key="idx">
-                    {{item}}
-                  </th>
-                </tr>
-              </thead>
-              <tbody v-for="(value, key) in originData" :key="key">
-                <h4 v-if="!key.includes('Horizontal')" class="text-left p-1 pl-3 my-auto">{{key}}</h4>
-                <tr v-for="(rowVal, rowKey) in originData[key]" :key="rowKey">
-                  <td v-if="!key.includes('Horizontal')" class="align-middle" style="white-space: nowrap;">
-                    <span v-if="key=='Right'">
-                      Tilt {{rowKey}}° (-{{rowKey}})
-                    </span>
-                    <span v-else>
-                      Tilt {{rowKey}}° ({{rowKey}})
-                    </span>
-                  </td>
-                  <td v-else class="align-middle" style="white-space: nowrap;">{{key}}&nbsp;({{rowKey}})</td>
-                  <td class="align-middle" v-for="(inputVal, inputKey) in originData[key][rowKey]" :key="inputKey">
-                    <input type="text" class="form-control text-center no-border"
-                      v-model="originData[key][rowKey][inputKey]">
-                  </td>
-                  <td><input type="text" class="form-control text-center no-border" v-model="chartData[key][rowKey]"
-                      readonly></td>
-                </tr>
-              </tbody>
-            </table>
+      <div ref="exportData">
+        <div v-if="!graphSvgSrc">
+          <div class="exportTable">
+            <div class="mb-3">
+              <table class="table table-bordered">
+                <tbody>
+                  <tr>
+                    <td v-for="(value, key) in drInfo" :key="key">
+                      <div class="row">
+                        <div class="col-2 my-auto">{{key}}</div><div class="col-10"><input type="text" class="form-control text-center no-border" v-model="drInfo[key]"></div>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="mb-3">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th v-for="(value, key) in privInfo" :key="key">
+                      {{key}}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td v-for="(value, key) in privInfo" :key="key">
+                      <input type="text" class="form-control text-center no-border" v-model="privInfo[key]">
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div>
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th class="align-middle" v-for="(item, idx) of tableHead" :key="idx">
+                      {{item}}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody v-for="(value, key) in originData" :key="key">
+                  <h4 v-if="!key.includes('Horizontal')" class="text-left p-1 pl-3 my-auto">{{key}}</h4>
+                  <tr v-for="(rowVal, rowKey) in originData[key]" :key="rowKey">
+                    <td v-if="!key.includes('Horizontal')" class="align-middle" style="white-space: nowrap;">
+                      <span v-if="key=='Right'">
+                        Tilt {{rowKey}}° (-{{rowKey}})
+                      </span>
+                      <span v-else>
+                        Tilt {{rowKey}}° ({{rowKey}})
+                      </span>
+                    </td>
+                    <td v-else class="align-middle" style="white-space: nowrap;">{{key}}&nbsp;({{rowKey}})</td>
+                    <td class="align-middle" v-for="(inputVal, inputKey) in originData[key][rowKey]" :key="inputKey">
+                      <input type="number" class="form-control text-center no-border"
+                        v-model="originData[key][rowKey][inputKey]">
+                    </td>
+                    <td>
+                      <input type="number" class="form-control text-center no-border" v-model="chartData[key][rowKey]" readonly>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-        <div>
-          <graph :chart-data="recievData" ref="graph"/>
+        <div v-else>
+          <!-- <div class="p-2" style="border: 1px solid;">
+            <h4>진료 정보</h4>  
+            <div v-for="(value, key) in drInfo" :key="key">
+              {{key}}:&nbsp;{{value}}
+            </div>
+          </div>
+          <div class="p-2" style="border: 1px solid;">
+            <h4>진료인 정보</h4>
+            <div v-for="(value, key) in privInfo" :key="key">
+              {{key}}:&nbsp;{{value}}
+            </div>
+          </div> -->
+          <div class="row m-0 p-2 text-center" style="border: 1px solid;">
+            <h4 class="col-12">데이터 정보</h4>
+            <div class="col-3" style="border: 1px solid;" v-for="(value, key) in exportData" :key="key">
+              <div class="row" v-if="key!='timestamp'">
+                <div class="col-9" style="border: solid 1px;">{{key}}</div><div class="col-3" style="border: solid 1px;">{{value}}</div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div v-if="graphSvgSrc">
-          <img width="100%" :src="graphSvgSrc"/>
+        <div class="exportGraph html2pdf__page-break" ref="exportGraph">
+          <div v-if="!graphSvgSrc">
+            <graph :chart-data="recievData" ref="graph" />
+          </div>
+          <div v-else style="border: 1px solid">
+            <img width="100%" :src="graphSvgSrc" />
+            <div class="row">
+              <div class="col text-left ml-5"><strong>Right</strong></div>
+              <div class="col text-center"><strong>Tilt Angle</strong></div>
+              <div class="col text-right mr-5"><strong>Left</strong></div>
+            </div>
+          </div>
         </div>
+        
       </div>
     </div>
   </div>
@@ -215,9 +249,10 @@
         let summ = Object.values(this.originData[direction][degree]).reduce((a, b) => parseInt(a) + parseInt(b), 0)
         this.chartData[direction][degree] = parseFloat((summ / 3 || 0).toFixed(2))
       },
-      exportToPDF() {
-        this.graphSvgSrc = this.$refs.graph.getSvgURI() 
-        html2pdf(this.$refs.exportPage, {
+      async exportToPDF() {
+        this.graphSvgSrc = (await this.$refs.graph.getSvgURI()).imgURI
+
+        await html2pdf(this.$refs.exportData, {
           margin: 5,
           filename: 'document.pdf',
           image: {
@@ -230,10 +265,14 @@
           jsPDF: {
             orientation: 'portrait',
             unit: 'mm',
-            format: 'a4',
             compressPDF: true
+          },
+          pagebreak: {
+            after: ['exportTable', 'exportGraph']
           }
         })
+
+        this.graphSvgSrc = null
       },
       async init() {
         this.isFirst = await findData(this.$route.query['id'])
@@ -261,8 +300,14 @@
     created() {
     },
     mounted() {
-      this.graphWidth = this.$refs.exportPage.clientWidth
+      this.graphWidth = this.$refs.exportData.clientWidth
       this.init()
+    },
+    computed: {
+      getGraphWidth() {
+        console.log(this.$refs.exportData.clientWidth)
+        return 
+      }
     },
     watch: {
       originData: {
