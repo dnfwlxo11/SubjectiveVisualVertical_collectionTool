@@ -36,7 +36,7 @@ export default {
         },
         pageBtnSize: {
             type: Number,
-            default: 5
+            default: 3
         }
     },
     data() {
